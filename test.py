@@ -1,30 +1,44 @@
 from behaviour import *
-from random import randint
+import time
 
-morale = 3
-me_x = 0
+morale = 5
+me_x = 1
 player_x = 5
 food_x = 3
 
 def panicked():
-    print("Morale check")
+    print("Checking Morale..")
     return morale <= 4
 
 def flee():
-    print("Me flee!")
+    print("Monster fleeing")
 
 def move_to_player():
-    print("move toward player")
+    print("Moving toward player")
     global me_x, player_x
-    if me_x <=player_x:
+    if me_x <= player_x:
         me_x += 1
 
-def player_in_range():
-    print("player in range")
-    return player_x - me_x <= 6
+def can_see_player():
+    x = (player_x - me_x <= 6)
+    if x:
+        print("I can see player")
+        return True
+    else:
+        return False
+
+def beside_player():
+    x = (player_x - me_x <= 1)
+    if x:
+        print("I am beside player")
+        return True
+    else:
+        return False
 
 def attack_player():
+    global morale
     print("attack player!")
+    morale -= 1
 
 def is_hungry():
     print("is hungry")
@@ -48,12 +62,11 @@ def eat_food():
 def wander():
     print("wandering idly")
 
+
 ai = Tree(root=Selector(
     If(panicked, Action(flee)),
-    If(player_in_range, Sequence(
-        Action(move_to_player),
-        Action(attack_player),
-    )),
+    If(beside_player, Action(attack_player)),
+    If(can_see_player, Action(move_to_player)),
     If(is_hungry,
        If(food_in_range,
           Sequence(
@@ -66,6 +79,8 @@ ai = Tree(root=Selector(
     Action(wander)
 ))
 
-ai.tick()
-print("tick update 2")
-ai.tick()
+
+
+for i in range(5):
+    time.sleep(1)
+    ai.tick()

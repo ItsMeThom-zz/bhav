@@ -12,18 +12,26 @@ class NodeState(Enum):
 class Node:
     state = NodeState.READY
     children = []
-    parent_tree = None
 
     def __init__(self, *children):
         self.state = NodeState.READY
         self.children = [c for c in children]
+        self.parent_tree = None
 
     def reset(self):
         if self.state is not NodeState.RUNNING:
             self.state = NodeState.READY
         for child in self.children:
-            if issubclass(child.__class__, type(Node)):
+            if isinstance(child, Node):
                 child.reset()
+
+    def set_tree(self, tree):
+        print("setting tree to {}".format(tree))
+        self.parent_tree = tree
+        for child in self.children:
+            if isinstance(child, Node):
+                print("set child")
+                child.set_tree(tree)
 
     @abstractmethod
     def check(self):
@@ -132,8 +140,12 @@ class Tree:
     root_node = None
 
     def __init__(self, root):
-        self.root_node = root
+        self.set_root(root)
         self.context = {}
+
+    def set_root(self, node):
+        node.set_tree(self)
+        self.root_node = node
 
     def tick(self):
         self.root_node.reset()
