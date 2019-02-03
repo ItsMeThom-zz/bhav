@@ -1,0 +1,12 @@
+{
+  "Selector": [
+    {"if":  "panicked", "action": "flee"},
+    {"if": "beside_player", "action":  "attack_player"},
+    {"if": "can_see_player", "action":  "move_to_player"},
+    {"if":  "hungry", "sequence": [
+      {"action":  "move_to_food"},
+      {"action":  "eat_food"}
+    ]},
+    {"action":  "wander"}
+  ]
+}
